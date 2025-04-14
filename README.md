@@ -1,5 +1,7 @@
 # wx250s teleop with joystick
 
+This repo provides a prebuilt public docker image for teleoperating wx250s robot arm with Xbox 360 controller. 
+
 ```bash
 # in your host machine
 git clone https://github.com/jingjing-gong/wx250s-teleop-joystick.git

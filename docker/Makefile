@@ -1,13 +1,13 @@
 SHELL=/bin/bash
 # PRIVATE_REGISTRY:=
-PRIVATE_REGISTRY:=docker.home.jjgong.com:20443/
+PUBLIC_REGISTRY:=docker.home.jjgong.com:20443
 BASE_IMAGE:=m.daocloud.io/docker.io/osrf/ros:humble-desktop
 # BASE_IMAGE:=${PRIVATE_REGISTRY}/nvidia/cuda:12.8.0-devel-ubuntu20.04
 
 
 PROJECT_NAME:=wx250s-teleop
 TEAM_NAME:=jerrikeph
-PUBLIC_IMAGE:=${PRIVATE_REGISTRY}${TEAM_NAME}/${PROJECT_NAME}
+PUBLIC_IMAGE:=${PUBLIC_REGISTRY}/${TEAM_NAME}/${PROJECT_NAME}
 
 # HTTPS_PROXY:=${https_proxy}
 # HTTP_PROXY:=${http_proxy}
@@ -63,7 +63,6 @@ build_private: _setup_sshkey _setup_gitconfig
 	if [ ! -z "${PRIVATE_REGISTRY}" ]; then \
 		docker push ${PRIVATE_IMAGE}; \
 	fi;
-	- tfinished building private image: ${PRIVATE_IMAGE}
 
 edit_public: _pull_public
 	$(eval EDIT_CONTRAINER_NAME=${CONTRAINER_NAME}_edit_public)
@@ -102,7 +101,6 @@ build_public:
 	--build-arg http_proxy=${HTTP_PROXY} \
 	-t ${PUBLIC_IMAGE} .
 	docker push ${PUBLIC_IMAGE}
-	- tfinished building public image: ${PUBLIC_IMAGE}
 
 _exec:
 	docker exec -it ${CONTRAINER_NAME} bash
