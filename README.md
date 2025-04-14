@@ -16,7 +16,7 @@ make
 ros2 launch interbotix_xsarm_joy xsarm_joy.launch.py robot_model:=wx250s controller:=xbox360
 ```
 > [!NOTE]
->if you don't have a wx250s robot arm, you can use the simulation mode. The following command will launch the teleop node for wx250s robot arm with Xbox 360 controller in Rviz simulation.
+>In case you don't have a wx250s robot arm with you, you can use the simulation mode. The following command will launch the teleop node for wx250s robot arm with Xbox 360 controller in Rviz simulation.
 >```bash
 ># in your docker container shell
 >ros2 launch interbotix_xsarm_joy xsarm_joy.launch.py robot_model:=wx250s controller:=xbox360 use_sim:=true
