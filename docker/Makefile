@@ -128,9 +128,9 @@ _instantiate_container:
 			--ipc host \
 			--env DISPLAY \
 			--device /dev/dri \
-			--device ${RBT_DEV}:/dev/ttyDXL \
-			--device ${JS_DEV} \
-			--device ${JS_EVENT} \
+			--device-cgroup-rule 'c 188:* rmw' \
+			--device-cgroup-rule 'c 13:* rmw' \
+			-v /dev:/dev \
 			-v /tmp/.X11-unix:/tmp/.X11-unix:rw \
 			-v ${SHARE_DIR}:${TO_SHARE_DIR} \
 			-v ${HOME}/.cache:${CHOME}/.cache \
