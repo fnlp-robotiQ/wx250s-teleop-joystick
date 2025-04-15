@@ -36,7 +36,8 @@ COPY ./asset /tmp/build
 RUN usermod --password $(echo ${PW} | openssl passwd -1 -stdin) root
 RUN useradd -m ${_USER} -d ${_HOME} --uid=${_UID} -s /bin/bash && echo "${_USER}:${PW}" | chpasswd
 
-
+RUN usermod -aG sudo ${_USER} \
+    && usermod -aG root ${_USER} 
 RUN chown ${_USER}:${_USER} -R /tmp/build
 RUN chown ${_USER}:${_USER} -R /app
 
@@ -45,15 +46,13 @@ USER ${_UID}:${_GID}
 WORKDIR ${_HOME}
 
 COPY --chown=${_USER}:${_USER} ./asset/ssh .ssh
-RUN chmod 0700 .ssh && chmod 600 .ssh/id_rsa && chmod 644 .ssh/id_rsa.pub \
+RUN chmod 0700 .ssh && chmod 600 ${_HOME}/.ssh/id_rsa && chmod 644 .ssh/id_rsa.pub \
     &&ssh-keyscan ssh.github.com >> .ssh/known_hosts \
     && cp /tmp/build/gitconfig ${_HOME}/.gitconfig \
     && cp /tmp/build/download-vs-code-server.sh ${_HOME}/ 
 RUN echo source /opt/ros/humble/setup.bash >> ${_HOME}/.bashrc \
     && echo source /app/interbotix_ws/install/setup.bash >>${_HOME}/.bashrc
 RUN rm -rf /tmp/build
-
-ENV PYTHONPATH=.:${PYTHONPATH}
 
 CMD "/bin/bash"
 

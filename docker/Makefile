@@ -126,12 +126,12 @@ _instantiate_container:
 		docker run -itd --rm --shm-size=120g \
 			--network host \
 			--ipc host \
-    		--env DISPLAY \
+			--env DISPLAY \
 			--device /dev/dri \
-			-v /dev:/dev \
-			--device-cgroup-rule='c 188:* rmw' \
-			--device-cgroup-rule='c 13:* rmw' \
-    		-v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+			--device ${RBT_DEV}:/dev/ttyDXL \
+			--device ${JS_DEV} \
+			--device ${JS_EVENT} \
+			-v /tmp/.X11-unix:/tmp/.X11-unix:rw \
 			-v ${SHARE_DIR}:${TO_SHARE_DIR} \
 			-v ${HOME}/.cache:${CHOME}/.cache \
 			-v ${HOME}/.netrc:${CHOME}/.netrc \
