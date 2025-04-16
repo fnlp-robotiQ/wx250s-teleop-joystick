@@ -2,14 +2,24 @@
 
 This repo provides a prebuilt public docker image for teleoperating wx250s robot arm with Xbox 360 controller. 
 
+## Prerequisites
+ubuntu 20.04 or later, if you don't have the docker installed, please run `sudo bash ./setup_docker_for_host.sh` and reboot your host machine, you probably need to get around the GFW to succeed.
+
+## Quick Start
 ```bash
-# in your host machine
+# in your host machine setup udev rules for only one time
 git clone https://github.com/jingjing-gong/wx250s-teleop-joystick.git
-cd wx250s-teleop-joystick/docker
+cd wx250s-teleop-joystick
+bash ./setup_udev_rules_for_host.sh
+```
+
+Then all you need is `make`,
+```bash
+cd docker
 make
 ```
 > [!NOTE]
-> This will pull the public image automatically and build your private image if not exist, then it will take you to the container shell.
+> This will pull the public image automatically and build your private image if not exist, then it will take you to the container shell. (it will take sometime to download the image if you are using the public image for the first time, please be patient)
 
 ```bash
 # in your docker container shell
