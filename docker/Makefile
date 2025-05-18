@@ -1,13 +1,13 @@
 SHELL=/bin/bash
 # PRIVATE_REGISTRY:=
-PUBLIC_REGISTRY:=docker.home.jjgong.com:20443
+PUBLIC_REGISTRY:=
 BASE_IMAGE:=m.daocloud.io/docker.io/osrf/ros:humble-desktop
 # BASE_IMAGE:=${PRIVATE_REGISTRY}/nvidia/cuda:12.8.0-devel-ubuntu20.04
 
 
 PROJECT_NAME:=wx250s-teleop
 TEAM_NAME:=jerrikeph
-PUBLIC_IMAGE:=${PUBLIC_REGISTRY}/${TEAM_NAME}/${PROJECT_NAME}
+PUBLIC_IMAGE:=${PUBLIC_REGISTRY}${TEAM_NAME}/${PROJECT_NAME}
 
 # HTTPS_PROXY:=${https_proxy}
 # HTTP_PROXY:=${http_proxy}
