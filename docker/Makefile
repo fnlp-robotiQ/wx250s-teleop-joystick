@@ -1,20 +1,18 @@
 SHELL=/bin/bash
-# PRIVATE_REGISTRY:=
 PUBLIC_REGISTRY:=
 BASE_IMAGE:=m.daocloud.io/docker.io/osrf/ros:humble-desktop
-# BASE_IMAGE:=${PRIVATE_REGISTRY}/nvidia/cuda:12.8.0-devel-ubuntu20.04
-
 
 PROJECT_NAME:=wx250s-teleop
 TEAM_NAME:=jerrikeph
-if [ -n "${PUBLIC_REGISTRY}" ]; then
-	PUBLIC_REGISTRY:=${PUBLIC_REGISTRY}/
+
+ifdef PUBLIC_REGISTRY
+PUBLIC_REGISTRY:=$(PUBLIC_REGISTRY)/
 else
-	PUBLIC_REGISTRY:=
+PUBLIC_REGISTRY:=
+endif
 PUBLIC_IMAGE:=${PUBLIC_REGISTRY}${TEAM_NAME}/${PROJECT_NAME}
 
-# HTTPS_PROXY:=${https_proxy}
-# HTTP_PROXY:=${http_proxy}
+
 HTTPS_PROXY:=
 HTTP_PROXY:=
 _USER := $(shell whoami)
