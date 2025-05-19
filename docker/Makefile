@@ -7,6 +7,10 @@ BASE_IMAGE:=m.daocloud.io/docker.io/osrf/ros:humble-desktop
 
 PROJECT_NAME:=wx250s-teleop
 TEAM_NAME:=jerrikeph
+if [ -n "${PUBLIC_REGISTRY}" ]; then
+	PUBLIC_REGISTRY:=${PUBLIC_REGISTRY}/
+else
+	PUBLIC_REGISTRY:=
 PUBLIC_IMAGE:=${PUBLIC_REGISTRY}${TEAM_NAME}/${PROJECT_NAME}
 
 # HTTPS_PROXY:=${https_proxy}
@@ -20,7 +24,7 @@ PW:=rootpass
 
 LOCAL_NAME:=exp/${_USER}_${PROJECT_NAME}
 PRIVATE_IMAGE:=${PRIVATE_REGISTRY}${LOCAL_NAME}
-CONTRAINER_NAME=$(subst /,_,$(LOCAL_NAME))
+CONTAINER_NAME=$(subst /,_,$(LOCAL_NAME))
 
 PROJ_DIR:=${HOME}/projects
 SHARE_DIR:=${HOME}/data
@@ -44,9 +48,9 @@ run_root:  _check_image _instantiate_container _exec_root
 run_refresh: kill run
 
 kill:
-	if docker container ls | grep -w ${CONTRAINER_NAME}; then \
-		echo "container ${CONTRAINER_NAME} exists, killing it first"; \
-		docker container kill  ${CONTRAINER_NAME}; fi
+	if docker container ls | grep -w ${CONTAINER_NAME}; then \
+		echo "container ${CONTAINER_NAME} exists, killing it first"; \
+		docker container kill  ${CONTAINER_NAME}; fi
 
 build_private: _setup_sshkey _setup_gitconfig
 	DOCKER_BUILDKIT=1 docker build --no-cache --pull --target private \
@@ -65,7 +69,7 @@ build_private: _setup_sshkey _setup_gitconfig
 	fi;
 
 edit_public: _pull_public
-	$(eval EDIT_CONTRAINER_NAME=${CONTRAINER_NAME}_edit_public)
+	$(eval EDIT_CONTAINER_NAME=${CONTAINER_NAME}_edit_public)
 	xhost +local:docker; \
 	docker run -it ${USE_GPUS} \
 		--network host \
@@ -75,13 +79,13 @@ edit_public: _pull_public
 		-v /tmp/.X11-unix:/tmp/.X11-unix:rw \
 		-v ${SHARE_DIR}:${TO_SHARE_DIR} \
 		-v ${PROJ_DIR}:${TO_PROJ_DIR} \
-		--name ${EDIT_CONTRAINER_NAME} ${PUBLIC_IMAGE} /bin/bash
-	docker commit ${EDIT_CONTRAINER_NAME} ${PUBLIC_IMAGE}
+		--name ${EDIT_CONTAINER_NAME} ${PUBLIC_IMAGE} /bin/bash
+	docker commit ${EDIT_CONTAINER_NAME} ${PUBLIC_IMAGE}
 	docker push ${PUBLIC_IMAGE}
-	docker container rm ${EDIT_CONTRAINER_NAME}
+	docker container rm ${EDIT_CONTAINER_NAME}
 
 inspect_public: _pull_public
-	$(eval CONTRAINER_NAME=${CONTRAINER_NAME}_inspect_public)
+	$(eval CONTAINER_NAME=${CONTAINER_NAME}_inspect_public)
 	xhost +local:docker; \
 	docker run -it --rm ${USE_GPUS} \
 		--network host \
@@ -91,7 +95,7 @@ inspect_public: _pull_public
 		-v /tmp/.X11-unix:/tmp/.X11-unix:rw \
 		-v ${SHARE_DIR}:${TO_SHARE_DIR} \
 		-v ${PROJ_DIR}:${TO_PROJ_DIR} \
-		--name ${CONTRAINER_NAME} ${PUBLIC_IMAGE} /bin/bash
+		--name ${CONTAINER_NAME} ${PUBLIC_IMAGE} /bin/bash
 
 	
 build_public:
@@ -100,13 +104,16 @@ build_public:
 	--build-arg https_proxy=${HTTPS_PROXY} \
 	--build-arg http_proxy=${HTTP_PROXY} \
 	-t ${PUBLIC_IMAGE} .
-	docker push ${PUBLIC_IMAGE}
+	#push public image if PUBLIC_REGISTRY is set
+	if [ -n "${PUBLIC_REGISTRY}" ]; then \
+		docker push ${PUBLIC_IMAGE}; \
+	fi;
 
 _exec:
-	docker exec -it ${CONTRAINER_NAME} bash
+	docker exec -it ${CONTAINER_NAME} bash
 
 _exec_root:
-	docker exec -itu 0 ${CONTRAINER_NAME} bash
+	docker exec -itu 0 ${CONTAINER_NAME} bash
 
 _instantiate_container: 
 	touch ${HOME}/.netrc
@@ -121,7 +128,7 @@ _instantiate_container:
 		mkdir -p ${HOME}/vscode/vscode-server;fi 
 	if [ ! -d ${HOME}/vscode/vscode-remote-containers ]; then \
 		mkdir -p ${HOME}/vscode/vscode-remote-containers; fi 
-	if ! docker container ls | grep -w ${CONTRAINER_NAME}; then \
+	if ! docker container ls | grep -w ${CONTAINER_NAME}; then \
 		xhost +local:docker; \
 		docker run -itd --rm --shm-size=120g \
 			--network host \
@@ -140,7 +147,7 @@ _instantiate_container:
 			-v ${HOME}/vscode/vscode-server:${CHOME}/.vscode-server \
 			-v ${HOME}/vscode/vscode-remote-containers:${CHOME}/.vscode-remote-containers \
 			--user ${_UID}:${_GID} \
-			--name ${CONTRAINER_NAME} ${USE_GPUS} $(PRIVATE_IMAGE); \
+			--name ${CONTAINER_NAME} ${USE_GPUS} $(PRIVATE_IMAGE); \
 	fi; \
 
 _pull:
@@ -156,7 +163,7 @@ _pull_public:
 
 # attach is dangerous, exit from attached shell will terminate the container
 _attach:
-	docker attach ${CONTRAINER_NAME}
+	docker attach ${CONTAINER_NAME}
 
 
 _setup_sshkey:
